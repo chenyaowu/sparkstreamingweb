@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+<div id="main" style="width: 600px;height:400px;position: absolute;top: 50%;left: 50%;margin-top: -200px;margin-left: -300px;"></div>
+<script>
+function init() {
+    window.location.href="/urlecharts";
+}
+    function getData() {
+        //<![CDATA[
+        var datas =[];
+        $.ajax({
+            type:"POST",
+            url:"/url_clickcount_dynamic",
+            dataType:'json',
+            async:false,
+            success:function (result) {
+                for(var i=0;i<result.length;i++){
+                    datas.push({"value":result[i].value,"name":result[i].name})
+                }
+            }
+        })
+        return datas;
+        //]]>
+
+    }
+
+</script>
+<script type="text/javascript">
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    option = {
+        title : {
+            text: '各网站实时访问量统计',
+            subtext: '各工程访问次数',
+            x:'center'
+        },
+        tooltip : {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: ['校园平台系统','综合素质评价系统','OA办公系统','微信H5']
+        },
+        series : [
+            {
+                name: '访问次数',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                data:(getData)(),
+                itemStyle: {
+                    emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            }
+        ]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+   myChart.setOption(option);
+   window.setInterval("init()",30000);
+    //echarts.init(document.getElementById('main')).setOption(option);
+</script>
+
+
+</body>
+</html>
